@@ -2,8 +2,10 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { PORT } = require("./constant");
-const { pool } = require("./connection");
+const { PORT } = require("./src/config/constant");
+const { pool } = require("./src/config/connection");
+
+const mainRoutes = require("./src/index");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -33,6 +35,8 @@ async function testConnection() {
 }
 
 testConnection();
+
+app.use("/api", mainRoutes);
 
 app.listen(PORT, () => {
   console.log(`Running on port ${PORT}`);

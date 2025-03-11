@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index",
-    "start": "node index.js"
+    "start": "node index.js",
+    "migrate": "node ./src/sql/migrate.js",
+    "rollback": "node ./src/sql/rollback.js"
   },
   "author": "",
   "license": "ISC",
@@ -16,6 +18,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "joi": "^17.13.3",
+    "knex": "^3.1.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^3.13.0"

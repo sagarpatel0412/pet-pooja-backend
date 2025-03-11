@@ -17,4 +17,15 @@ const pool = mysql
   })
   .promise();
 
-module.exports = { pool };
+async function queryResults(query, values = []) {
+  try {
+    console.log("Executing Query:", query);
+    console.log("With Values:", values);
+    const [results] = await pool.query(query, values);
+    return results;
+  } catch (error) {
+    throw error;
+  }
+}
+
+module.exports = { pool, queryResults };
