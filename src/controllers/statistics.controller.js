@@ -18,16 +18,31 @@ exports.topSpendingDays = async (req, res) => {
 exports.percentageChange = async (req, res) => {
   try {
     const result = await queryResults(`
-      SELECT user_id,
-        SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) THEN amount ELSE 0 END) AS last_month,
-        SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE) THEN amount ELSE 0 END) AS this_month,
-        (SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE) THEN amount ELSE 0 END) - 
-         SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) THEN amount ELSE 0 END)) /
-        SUM(CASE WHEN MONTH(date) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) THEN amount ELSE 1 END) * 100 
-        AS percentage_change
-      FROM expenses
-      WHERE date >= DATE_SUB(CURRENT_DATE, INTERVAL 2 MONTH)
-      GROUP BY user_id
+WITH monthly_expenses AS (
+    SELECT
+        user_id,
+        DATE_FORMAT(date, '%Y-%m') AS month,
+        SUM(amount) AS total_expenditure,
+        MIN(STR_TO_DATE(CONCAT(DATE_FORMAT(date, '%Y-%m'), '-01'), '%Y-%m-%d')) AS month_date
+    FROM expenses
+    GROUP BY user_id, DATE_FORMAT(date, '%Y-%m')
+)
+SELECT
+    m.user_id,
+    m.month,
+    m.total_expenditure,
+    p.total_expenditure AS previous_total,
+    CASE
+        WHEN p.total_expenditure IS NULL OR p.total_expenditure = 0 THEN NULL
+        ELSE ((m.total_expenditure - p.total_expenditure) / p.total_expenditure) * 100
+    END AS percentage_change
+FROM monthly_expenses m
+LEFT JOIN monthly_expenses p
+    ON m.user_id = p.user_id
+    AND p.month_date = DATE_SUB(m.month_date, INTERVAL 1 MONTH)
+ORDER BY m.user_id, m.month;
+
+
     `);
     res.json(result);
   } catch (error) {
@@ -38,11 +53,29 @@ exports.percentageChange = async (req, res) => {
 exports.predictNextMonthSpending = async (req, res) => {
   try {
     const result = await queryResults(`
-      SELECT user_id,
-        (SUM(CASE WHEN date >= DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH) THEN amount ELSE 0 END) / 3) AS predicted_next_month
-      FROM expenses
-      WHERE date >= DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH)
-      GROUP BY user_id
+      WITH monthly_expenses AS (
+    SELECT
+        user_id,
+        DATE_FORMAT(date, '%Y-%m') AS month,
+        SUM(amount) AS total_expenditure
+    FROM expenses
+    GROUP BY user_id, DATE_FORMAT(date, '%Y-%m')
+),
+ranked_expenses AS (
+    SELECT
+        user_id,
+        month,
+        total_expenditure,
+        ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY month DESC) AS rn
+    FROM monthly_expenses
+)
+SELECT
+    user_id,
+    AVG(total_expenditure) AS predicted_next_month_expenditure
+FROM ranked_expenses
+WHERE rn <= 3
+GROUP BY user_id;
+
     `);
     res.json(result);
   } catch (error) {

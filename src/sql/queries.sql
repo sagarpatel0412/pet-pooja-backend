@@ -49,6 +49,25 @@ INSERT INTO categories (name) VALUES
 ('Savings & Investments');
 
 INSERT INTO expenses (user_id, category_id, amount, date, description) VALUES
+
+(1, 1, 120.50, '2023-12-05', 'Grocery Shopping'),
+(2, 3, 80.00, '2023-12-10', 'Restaurant Bill'),
+(1, 5, 210.00, '2023-12-15', 'Gym Membership'),
+(2, 7, 500.75, '2023-12-18', 'New Phone Purchase'),
+(1, 2, 100.99, '2023-12-22', 'Clothes Shopping'),
+(2, 4, 90.50, '2023-12-26', 'Electric Bill Payment'),
+(1, 1, 130.00, '2024-01-02', 'Supermarket Groceries'),
+(2, 3, 85.00, '2024-01-07', 'Dinner with Friends'),
+(1, 5, 220.00, '2024-01-12', 'Fitness Subscription'),
+(2, 7, 480.00, '2024-01-15', 'Laptop Upgrade'),
+(1, 2, 110.50, '2024-01-19', 'Winter Clothing'),
+(2, 4, 100.00, '2024-01-23', 'Gas Bill'),
+(1, 1, 140.75, '2024-02-03', 'Grocery Shopping'),
+(2, 3, 95.20, '2024-02-08', 'Valentine’s Dinner'),
+(1, 5, 230.00, '2024-02-14', 'Gym Fees'),
+(2, 7, 450.75, '2024-02-17', 'Gaming Console'),
+(1, 2, 120.99, '2024-02-22', 'Clothing'),
+(2, 4, 105.50, '2024-02-27', 'Water Bill'),
 (1, 1, 150.50, '2024-03-01', 'Groceries from Walmart'),
 (2, 3, 75.20, '2024-03-02', 'Dinner at a restaurant'),
 (1, 5, 200.00, '2024-03-03', 'Monthly gym membership'),
