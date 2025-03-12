@@ -63,7 +63,22 @@ exports.deleteExpense = async (req, res) => {
 
 exports.getExpenses = async (req, res) => {
   try {
-    const expenses = await queryResults("SELECT * FROM expenses");
+    const query = `
+    SELECT 
+    e.id AS id,
+    e.user_id AS user_id, 
+    e.date AS date, 
+    u.name AS name, 
+    u.email AS email, 
+    e.category_id AS category_id, 
+    c.name AS category, 
+    e.description, 
+    e.amount 
+FROM expenses e
+INNER JOIN users u ON e.user_id = u.id
+INNER JOIN categories c ON e.category_id = c.id;
+    `;
+    const expenses = await queryResults(query);
     res.json(expenses);
   } catch (error) {
     res.status(500).json({ error: error.message });
