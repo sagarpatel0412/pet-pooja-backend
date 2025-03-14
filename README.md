@@ -36,11 +36,11 @@ npm install
    ```sh
    cp .env.example .env
    ```
-2. Open `.env` and add your database credentials:
+2. Open `.env` and add your database credentials and query for database creation is already writtin in migration so no need to create it manually with name petpooja_backend:
    ```
     DIALECT=
     DATABASE_HOST=
-    DATABASE_NAME=
+    DATABASE_NAME=petpooja_backend
     DATABASE_USER=
     DATABASE_PASS=
     DATABASE_PORT=
