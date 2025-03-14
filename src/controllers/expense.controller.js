@@ -20,7 +20,8 @@ exports.addExpense = async (req, res) => {
   if (isNaN(Number(user_id)) || user_id === "") {
     if (!userName || !email) {
       return res.status(400).json({
-        error:
+        error: true,
+        errors:
           "User details (userName and email) are required when user_id is not provided as a number.",
       });
     }
@@ -37,16 +38,18 @@ exports.addExpense = async (req, res) => {
         user_id = userInsertResult.insertId;
       }
     } catch (error) {
-      return res
-        .status(500)
-        .json({ error: "Error processing user: " + error.message });
+      return res.status(500).json({
+        error: true,
+        errors: "Error processing user: " + error.message,
+      });
     }
   }
 
   if (isNaN(Number(category_id)) || category_id === "") {
     if (!category_id) {
       return res.status(400).json({
-        error:
+        error: true,
+        errors:
           "Category details are required when category_id is not a valid number.",
       });
     }
@@ -62,9 +65,10 @@ exports.addExpense = async (req, res) => {
         category_id = categoryInsertResult.insertId;
       }
     } catch (error) {
-      return res
-        .status(500)
-        .json({ error: "Error processing category: " + error.message });
+      return res.status(500).json({
+        error: true,
+        errors: "Error processing category: " + error.message,
+      });
     }
   }
 
@@ -78,7 +82,7 @@ exports.addExpense = async (req, res) => {
   if (error) {
     return res
       .status(400)
-      .json({ error: error.details.map((err) => err.message) });
+      .json({ error: true, error: error.details.map((err) => err.message) });
   }
 
   try {
@@ -87,11 +91,12 @@ exports.addExpense = async (req, res) => {
       [user_id, category_id, amount, date, description]
     );
     res.status(201).json({
+      error: false,
       message: "Expense added successfully",
       expenseId: result.insertId,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
 
@@ -105,10 +110,10 @@ exports.updateExpense = async (req, res) => {
       [amount, date, description, id]
     );
     if (result.affectedRows === 0)
-      return res.status(404).json({ error: "Expense not found" });
-    res.json({ message: "Expense updated successfully" });
+      return res.status(404).json({ error: true, error: "Expense not found" });
+    res.json({ error: false, message: "Expense updated successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
 
@@ -118,10 +123,10 @@ exports.deleteExpense = async (req, res) => {
   try {
     const result = await queryResults("DELETE FROM expenses WHERE id=?", [id]);
     if (result.affectedRows === 0)
-      return res.status(404).json({ error: "Expense not found" });
-    res.json({ message: "Expense deleted successfully" });
+      return res.status(404).json({ error: true, error: "Expense not found" });
+    res.json({ error: true, message: "Expense deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
 
@@ -172,8 +177,8 @@ exports.getExpenses = async (req, res) => {
 
   try {
     const expenses = await queryResults(query, params);
-    res.status(200).json(expenses);
+    res.status(200).json({ error: false, data: expenses });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };

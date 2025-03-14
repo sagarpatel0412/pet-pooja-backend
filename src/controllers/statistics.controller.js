@@ -9,9 +9,9 @@ exports.topSpendingDays = async (req, res) => {
       ORDER BY total_spent DESC
       LIMIT 3
     `);
-    res.json(result);
+    res.json({ error: false, data: result });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
 
@@ -55,9 +55,9 @@ ORDER BY m.user_id, m.month;
           item.percentage_change === null ? "0" : item.percentage_change,
       };
     });
-    res.json(resultData);
+    res.json({ error: false, data: resultData });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
 
@@ -91,8 +91,8 @@ WHERE rn <= 3
 GROUP BY user_id;
 
     `);
-    res.json(result);
+    res.json({ error: false, data: result });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: true, errors: error.message });
   }
 };
